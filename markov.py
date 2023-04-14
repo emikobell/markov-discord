@@ -1,8 +1,9 @@
 """Generate Markov text from text files."""
 
 from random import choice
+import discord
 import sys
-
+import os
 
 def open_and_read_file(file_path1, file_path2 = None):
     """Take file path as string; return text as string.
@@ -61,8 +62,6 @@ def make_chains(text_string):
 
     return chains
 
-#chains_dict = make_chains(txt)
-
 
 def make_text(chains):
     """Return text from chains."""
@@ -97,8 +96,21 @@ else:
 # Get a Markov chain
 chains = make_chains(input_text)
 
-# Produce random text
-random_text = make_text(chains)
 
-print(random_text)
+intents = discord.Intents.default()
+intents.message_content = True
 
+client = discord.Client(intents=intents)
+
+@client.event
+async def on_ready():
+    print(f'We have logged in as {client.user}')
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+    if message.content:
+        await message.channel.send(make_text(chains))
+
+client.run(os.environ['DISCORD_TOKEN'])
