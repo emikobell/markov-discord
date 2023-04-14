@@ -1,0 +1,5 @@
+*.sh
+.DS_Store
+/__psycache__
+*.pyc
+env
